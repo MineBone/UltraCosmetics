@@ -6,6 +6,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +49,40 @@ public class CustomConfiguration extends YamlConfiguration {
 
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
-        super.load(file);
+    	FileInputStream stream;
+		try {
+			stream = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find " + file.getName());
+			e.printStackTrace();
+			return;
+		}
+		
+        InputStreamReader reader = new InputStreamReader(stream, Charset.forName("UTF-8"));
+		BufferedReader input = new BufferedReader(reader);
+		
+		StringBuilder stb = new StringBuilder();
+		
+		String line;
+		try {
+			while((line = input.readLine()) != null) {
+				stb.append(line + "\n");
+			}
+		} catch (IOException e1) {
+			System.err.println("Could not read " + file.getName());
+			e1.printStackTrace();
+			return;
+		} finally {
+			input.close();
+		}
+		
+		try {
+			loadFromString(stb.toString());
+		} catch (InvalidConfigurationException e) {
+			System.err.println("Could not load " + file.getName());
+			e.printStackTrace();
+			return;
+		}
 
         BufferedReader configReader = null;
         List<String> configLines = new ArrayList<>();
@@ -63,19 +97,25 @@ public class CustomConfiguration extends YamlConfiguration {
         boolean hasHeader = configLines.size() < 2 || !trim(configLines.get(1)).isEmpty();
 
         Map<String, List<String>> configComments = new LinkedHashMap<>();
+        
         for (int lineIndex = 0; lineIndex < configLines.size(); lineIndex++) {
             String configLine = configLines.get(lineIndex);
             String trimmedLine = trimPrefixSpaces(configLine);
+            
             if (trimmedLine.startsWith("#") && (lineIndex > 0 || !hasHeader)) {
                 String configKey = getPathToComment(configLines, lineIndex, configLine);
+                
                 if (configKey != null) {
                     List<String> keyComments = configComments.get(configKey);
+                    
                     if (keyComments == null) keyComments = new ArrayList<>();
+                    
                     keyComments.add(trimmedLine.substring(trimmedLine.startsWith("# ") ? 2 : 1));
                     configComments.put(configKey, keyComments);
                 }
             }
         }
+        
         comments = configComments;
     }
 

@@ -1,6 +1,7 @@
 package be.isach.ultracosmetics.cosmetics.treasurechests;
 
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.api.EconomyType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
@@ -16,6 +17,7 @@ import be.isach.ultracosmetics.cosmetics.suits.SuitType;
 import be.isach.ultracosmetics.util.MathUtils;
 import be.isach.ultracosmetics.util.SoundUtil;
 import be.isach.ultracosmetics.util.Sounds;
+
 import org.bukkit.*;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -375,15 +377,40 @@ public class TreasureRandomizer {
             itemStack = new ItemStack(Material.BARRIER);
         }
     }
+    
+    private void giveMoney() {
+    	int i = random.nextInt(1);
+    	
+    	if(i == 1) {
+    		giveMoney1();
+    	} else {
+    		giveMoney2();
+    	}
+	}
 
-    public void giveMoney() {
+    public void giveMoney1() {
         if (!UltraCosmetics.getInstance().isVaultLoaded()) {
             giveNothing();
             return;
         }
         int money = MathUtils.randomRangeInt(20, (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max"));
         name = MessageManager.getMessage("Treasure-Chests-Loot.Money").replace("%money%", money + "");
-        UltraCosmetics.economy.depositPlayer(player, money);
+        UltraCosmetics.economy.depositPlayer(EconomyType.HUESITOS, player, money);
+        itemStack = new ItemStack(Material.BONE);
+        if (money > 3 * (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max") / 4)
+            spawnRandomFirework(loc);
+        if (SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Message.enabled"))
+            Bukkit.broadcastMessage((getMessage("TreasureChests.Loots.Money.Message.message")).replace("%name%", player.getName()).replace("%money%", money + ""));
+    }
+    
+    public void giveMoney2() {
+        if (!UltraCosmetics.getInstance().isVaultLoaded()) {
+            giveNothing();
+            return;
+        }
+        int money = MathUtils.randomRangeInt(20, (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max"));
+        name = MessageManager.getMessage("Treasure-Chests-Loot.Money").replace("%money%", money + "");
+        UltraCosmetics.economy.depositPlayer(EconomyType.ALMAS, player, money);
         itemStack = new ItemStack(Material.DOUBLE_PLANT);
         if (money > 3 * (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max") / 4)
             spawnRandomFirework(loc);

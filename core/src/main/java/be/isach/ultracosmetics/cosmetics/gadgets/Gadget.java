@@ -2,10 +2,12 @@ package be.isach.ultracosmetics.cosmetics.gadgets;
 
 import be.isach.ultracosmetics.CustomPlayer;
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.api.EconomyType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.manager.GadgetManager;
 import be.isach.ultracosmetics.util.*;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -365,8 +367,8 @@ public abstract class Gadget implements Listener {
                     String purchase = MessageManager.getMessage("Purchase");
                     String cancel = MessageManager.getMessage("Cancel");
                     if (displayName.equals(purchase)) {
-                        if (UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).getBalance() >= getPrice()) {
-                            UltraCosmetics.economy.withdrawPlayer((Player) event.getWhoClicked(), getPrice());
+                        if (UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).getBalance(EconomyType.HUESITOS) >= getPrice()) {
+                            UltraCosmetics.economy.withdrawPlayer(EconomyType.HUESITOS, (Player) event.getWhoClicked(), getPrice());
                             UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).addAmmo(type.toString().toLowerCase(), getResultAmmoAmount());
                             event.getWhoClicked().sendMessage(MessageManager.getMessage("Successful-Purchase"));
                             if (openGadgetsInvAfterAmmo)

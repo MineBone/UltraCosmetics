@@ -129,6 +129,8 @@ public class EntityUtil implements IEntityUtil {
     public void makePanic(Entity entity) {
         EntityInsentient insentient = (EntityInsentient) ((CraftEntity) entity).getHandle();
         insentient.goalSelector.a(3, new CustomPathFinderGoalPanic((EntityCreature) insentient, 0.4d));
+        
+        insentient.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(1.4D);
     }
 
     @Override

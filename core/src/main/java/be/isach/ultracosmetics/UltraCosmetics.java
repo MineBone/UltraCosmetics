@@ -1,7 +1,36 @@
 package be.isach.ultracosmetics;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import be.isach.ultracosmetics.api.EconomyWrapper;
 import be.isach.ultracosmetics.command.CommandManager;
-import be.isach.ultracosmetics.command.subcommands.*;
+import be.isach.ultracosmetics.command.subcommands.SubCommandClear;
+import be.isach.ultracosmetics.command.subcommands.SubCommandGadgets;
+import be.isach.ultracosmetics.command.subcommands.SubCommandGive;
+import be.isach.ultracosmetics.command.subcommands.SubCommandMenu;
+import be.isach.ultracosmetics.command.subcommands.SubCommandSelfView;
+import be.isach.ultracosmetics.command.subcommands.SubCommandToggle;
+import be.isach.ultracosmetics.command.subcommands.SubCommandTreasure;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
@@ -20,33 +49,38 @@ import be.isach.ultracosmetics.cosmetics.suits.SuitType;
 import be.isach.ultracosmetics.listeners.MainListener;
 import be.isach.ultracosmetics.listeners.PlayerListener;
 import be.isach.ultracosmetics.listeners.v1_9.PlayerSwapItemListener;
-import be.isach.ultracosmetics.manager.*;
+import be.isach.ultracosmetics.manager.EmoteManager;
+import be.isach.ultracosmetics.manager.GadgetManager;
+import be.isach.ultracosmetics.manager.HatManager;
+import be.isach.ultracosmetics.manager.MainMenuManager;
+import be.isach.ultracosmetics.manager.MorphManager;
+import be.isach.ultracosmetics.manager.MountManager;
+import be.isach.ultracosmetics.manager.ParticleEffectManager;
+import be.isach.ultracosmetics.manager.PetManager;
+import be.isach.ultracosmetics.manager.PlayerManager;
+import be.isach.ultracosmetics.manager.SQLLoaderManager;
+import be.isach.ultracosmetics.manager.SuitManager;
+import be.isach.ultracosmetics.manager.TreasureChestManager;
 import be.isach.ultracosmetics.mysql.MySQLConnection;
 import be.isach.ultracosmetics.mysql.Table;
 import be.isach.ultracosmetics.run.FallDamageManager;
 import be.isach.ultracosmetics.run.InvalidWorldManager;
-import be.isach.ultracosmetics.util.*;
-import be.isach.ultracosmetics.version.*;
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.*;
+import be.isach.ultracosmetics.util.BlockUtils;
+import be.isach.ultracosmetics.util.CustomConfiguration;
+import be.isach.ultracosmetics.util.FileUtils;
+import be.isach.ultracosmetics.util.MetricsLite;
+import be.isach.ultracosmetics.util.SQLUtils;
+import be.isach.ultracosmetics.util.ServerVersion;
+import be.isach.ultracosmetics.version.AAnvilGUI;
+import be.isach.ultracosmetics.version.IActionBar;
+import be.isach.ultracosmetics.version.IEntityUtil;
+import be.isach.ultracosmetics.version.IFireworkFactory;
+import be.isach.ultracosmetics.version.IItemGlower;
+import be.isach.ultracosmetics.version.IMorphs;
+import be.isach.ultracosmetics.version.IMounts;
+import be.isach.ultracosmetics.version.IPathfinderUtil;
+import be.isach.ultracosmetics.version.IPets;
+import be.isach.ultracosmetics.version.VersionManager;
 
 /**
  * Created by sacha on 03/08/15.
@@ -74,19 +108,14 @@ public class UltraCosmetics extends JavaPlugin {
     public boolean placeHolderColor;
 
     /**
-     * If true, means vault is loaded and enabled.
-     */
-    private boolean vaultLoaded;
-
-    /**
      * Menu Listeners.
      */
     private Listener
 
-            /**
-             * Main Menu Listener.
-             */
-            mainMenuListener,
+    /**
+     * Main Menu Listener.
+     */
+    mainMenuListener,
 
     /**
      * Morph Menu Listener.
@@ -141,7 +170,7 @@ public class UltraCosmetics extends JavaPlugin {
     /**
      * Economy, used only if Vault is enabled.
      */
-    public static Economy economy = null;
+    public static EconomyWrapper economy = null;
 
     public static SQLUtils sqlUtils;
 
@@ -494,7 +523,7 @@ public class UltraCosmetics extends JavaPlugin {
 
         if ((ammoEnabled
                 || (SettingsManager.getConfig().getBoolean("Pets-Rename.Enabled") && SettingsManager.getConfig().getBoolean("Pets-Rename.Requires-Money.Enabled"))
-                || (areTreasureChestsEnabled() && SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Enabled"))) && Bukkit.getPluginManager().isPluginEnabled("Vault"))
+                || (areTreasureChestsEnabled() && SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Enabled"))))
             setupEconomy();
 
         if (!fileStorage) {
@@ -761,11 +790,8 @@ public class UltraCosmetics extends JavaPlugin {
         return placeHolderColor;
     }
 
-    /**
-     * @return {@code true} if vault is loaded, otherwise {@code false}
-     */
     public boolean isVaultLoaded() {
-        return vaultLoaded;
+        return economy != null;
     }
 
     /**
@@ -967,13 +993,7 @@ public class UltraCosmetics extends JavaPlugin {
      * @return {@code true} if it could be set up, otherwise {@code false}.
      */
     private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null)
-            economy = economyProvider.getProvider();
-
-        vaultLoaded = economy != null;
-
-        return (economy != null);
+       return true;
     }
 
     /**

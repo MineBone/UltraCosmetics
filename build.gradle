@@ -4,7 +4,7 @@ allprojects {
     apply plugin: 'idea'
 
     group = 'be.isach'
-    version = '2.3.4-RELEASE'
+    version = '7.0'
 
     compileJava.options.encoding = 'UTF-8'
 
@@ -30,7 +30,7 @@ allprojects {
 
 boolean local = false
 
-if (local) libsDirName = '/Users/sachalewin/Desktop/LOCAL/plugins'
+if (local) libsDirName = 'H:/MineBoneEclipse/MineBone/repo/be/isach/ultracosmetics/7.0'
 
 dependencies{
     subprojects.each{ p ->

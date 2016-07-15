@@ -1,6 +1,7 @@
 package be.isach.ultracosmetics.manager;
 
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.api.EconomyType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.treasurechests.TreasureChest;
@@ -8,6 +9,7 @@ import be.isach.ultracosmetics.cosmetics.treasurechests.TreasureChestDesign;
 import be.isach.ultracosmetics.util.Cuboid;
 import be.isach.ultracosmetics.util.SoundUtil;
 import be.isach.ultracosmetics.util.Sounds;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -108,8 +110,8 @@ public class TreasureChestManager implements Listener {
                 && event.getCurrentItem().hasItemMeta()
                 && event.getCurrentItem().getItemMeta().hasDisplayName()) {
             if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(MessageManager.getMessage("Purchase"))) {
-                if (UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).getBalance() >= (int) SettingsManager.getConfig().get("TreasureChests.Key-Price")) {
-                    UltraCosmetics.economy.withdrawPlayer((Player) event.getWhoClicked(), (int) SettingsManager.getConfig().get("TreasureChests.Key-Price"));
+                if (UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).getBalance(EconomyType.ALMAS) >= (int) SettingsManager.getConfig().get("TreasureChests.Key-Price")) {
+                    UltraCosmetics.economy.withdrawPlayer(EconomyType.ALMAS, (Player) event.getWhoClicked(), (int) SettingsManager.getConfig().get("TreasureChests.Key-Price"));
                     UltraCosmetics.getCustomPlayer((Player) event.getWhoClicked()).addKey();
                     event.getWhoClicked().sendMessage(MessageManager.getMessage("Successful-Purchase"));
                     event.getWhoClicked().closeInventory();

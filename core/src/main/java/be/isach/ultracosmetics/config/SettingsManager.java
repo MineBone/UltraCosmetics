@@ -1,17 +1,24 @@
 package be.isach.ultracosmetics.config;
 
-import be.isach.ultracosmetics.UltraCosmetics;
-import be.isach.ultracosmetics.util.CustomConfiguration;
-import org.bukkit.Bukkit;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.UUID;
+
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.UUID;
+import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.util.CustomConfiguration;
 
 /**
  * Created by sacha on 21/07/15.
@@ -50,8 +57,40 @@ public class SettingsManager {
                 e.printStackTrace();
             }
         }
-
-        fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        
+        FileInputStream stream;
+		try {
+			stream = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find " + fileName);
+			e.printStackTrace();
+			return;
+		}
+        InputStreamReader reader = new InputStreamReader(stream, Charset.forName("UTF-8"));
+		BufferedReader input = new BufferedReader(reader);
+		
+		StringBuilder stb = new StringBuilder();
+		
+		String line;
+		try {
+			while((line = input.readLine()) != null) {
+				stb.append(line + "\n");
+			}
+		} catch (IOException e1) {
+			System.err.println("Could not read " + fileName);
+			e1.printStackTrace();
+		}
+		
+		YamlConfiguration yaml = new YamlConfiguration();
+		
+		try {
+			yaml.loadFromString(stb.toString());
+		} catch (InvalidConfigurationException e) {
+			System.err.println("Could not load " + fileName);
+			e.printStackTrace();
+		}
+		
+        fileConfiguration = yaml;
     }
 
     /**

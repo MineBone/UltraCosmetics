@@ -2,12 +2,14 @@ package be.isach.ultracosmetics.manager;
 
 import be.isach.ultracosmetics.CustomPlayer;
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.api.EconomyType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.pets.PetType;
 import be.isach.ultracosmetics.util.ItemFactory;
 import be.isach.ultracosmetics.version.AAnvilGUI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -368,8 +370,8 @@ public class PetManager implements Listener {
                 String name = renamePetList.get(p);
                 event.setCancelled(true);
                 if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(MessageManager.getMessage("Purchase"))) {
-                    if (UltraCosmetics.getCustomPlayer(p).getBalance() >= (int) SettingsManager.getConfig().get("Pets-Rename.Requires-Money.Price")) {
-                        UltraCosmetics.economy.withdrawPlayer(p, (int) SettingsManager.getConfig().get("Pets-Rename.Requires-Money.Price"));
+                    if (UltraCosmetics.getCustomPlayer(p).getBalance(EconomyType.ALMAS) >= (int) SettingsManager.getConfig().get("Pets-Rename.Requires-Money.Price")) {
+                        UltraCosmetics.economy.withdrawPlayer(EconomyType.ALMAS, p, (int) SettingsManager.getConfig().get("Pets-Rename.Requires-Money.Price"));
                         p.sendMessage(MessageManager.getMessage("Successful-Purchase"));
                         if (UltraCosmetics.getCustomPlayer(p).currentPet.getType() == PetType.WITHER)
                             UltraCosmetics.getCustomPlayer(p).currentPet.entity.setCustomName(name);

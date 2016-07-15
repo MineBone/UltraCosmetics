@@ -1,5 +1,6 @@
 package be.isach.ultracosmetics;
 
+import be.isach.ultracosmetics.api.EconomyType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
@@ -281,10 +282,10 @@ public class CustomPlayer {
         }
     }
 
-    public double getBalance() {
+    public double getBalance(EconomyType type) {
         try {
             if (UltraCosmetics.getInstance().isVaultLoaded() && UltraCosmetics.economy != null)
-                return UltraCosmetics.economy.getBalance(getPlayer());
+                return UltraCosmetics.economy.getBalance(type, getPlayer());
         } catch (Exception exc) {
             UltraCosmetics.log("Error happened while getting a player's balance.");
             return 0;
