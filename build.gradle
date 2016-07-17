@@ -69,7 +69,7 @@ subprojects {
             url 'http://repo.dmulloy2.net/content/groups/public/'
         }
         maven {
-            url 'http://repo.sinndev.com/content/repositories/releases/'
+            url 'https://jitpack.io'
         }
     }
 }
