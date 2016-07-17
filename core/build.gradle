@@ -3,7 +3,7 @@ dependencies {
     compile ('LibsDisguises:LibsDisguises:9.0.7') {
         exclude group: 'org.spigotmc'
     }
-    compile 'com.github.koca2000.NoteBlockAPI:-SNAPSHOT'
+    compile 'com.github.koca2000.NoteBlockAPI:-fb489f1163-1'
     compile('net.milkbowl.vault:VaultAPI:1.5') {
         exclude group: 'org.bukkit'
     }
