@@ -12,14 +12,18 @@ public class EntitySpawningManager implements Listener {
 
     private static boolean bypass = false;
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
-        if (event.isCancelled() && bypass)
+        if (bypass)
             event.setCancelled(false);
     }
 
     public static void setBypass(boolean newbypass) {
         bypass = newbypass;
+    }
+    
+    public static boolean bypass() {
+    	return bypass;
     }
 
 }
