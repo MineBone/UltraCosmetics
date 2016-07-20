@@ -1,6 +1,7 @@
 package be.isach.ultracosmetics.cosmetics.treasurechests;
 
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.api.RewardType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.util.*;
 import be.isach.ultracosmetics.util.SoundUtil;
@@ -66,7 +67,7 @@ public class TreasureChest implements Listener {
         if (UltraCosmetics.getCustomPlayer(getPlayer()).currentMorph != null)
             UltraCosmetics.getCustomPlayer(getPlayer()).setSeeSelfMorph(false);
 
-        this.randomGenerator = new TreasureRandomizer(getPlayer(), getPlayer().getLocation());
+        this.randomGenerator = new TreasureRandomizer(getPlayer(), getPlayer().getLocation(), RewardType.NORMAL);
 
         BukkitRunnable runnable = new BukkitRunnable() {
             int i = 5;

@@ -2,6 +2,8 @@ package be.isach.ultracosmetics.cosmetics.treasurechests;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.api.EconomyType;
+import be.isach.ultracosmetics.api.RewardData;
+import be.isach.ultracosmetics.api.RewardType;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
@@ -39,6 +41,7 @@ public class TreasureRandomizer {
     public Location loc;
     private ItemStack itemStack;
     private String name;
+    private RewardType rewardType;
 
     public static List<GadgetType> gadgetList = new ArrayList<>();
     public static List<GadgetType> ammoList = new ArrayList<>();
@@ -55,37 +58,7 @@ public class TreasureRandomizer {
 
     private static Random random = new Random();
 
-    private enum ResultType {
-        AMMO,
-        GADGET,
-        MONEY,
-        MORPH,
-        MOUNT,
-        EFFECT,
-        PET,
-        HAT,
-        HELMET,
-        CHESTPLATE,
-        LEGGINGS,
-        BOOTS,
-        EMOTE
-    }
-
     private static final List<ResultType> RESULT_TYPES = new ArrayList<>();
-
-    private static final int MONEY_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Money.Chance");
-    private static final int GADGET_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Gadgets.Chance");
-    private static final int AMMO_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Gadgets-Ammo.Chance");
-    private static final int MORPHS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Morphs.Chance");
-    private static final int PETS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Pets.Chance");
-    private static final int EFFECTS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Effects.Chance");
-    private static final int MOUNTS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Mounts.Chance");
-    private static final int HATS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Hats.Chance");
-    private static final int HELMET_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Suits.Chance") / 4;
-    private static final int CHESTPLATE_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Suits.Chance") / 4;
-    private static final int LEGGINGS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Suits.Chance") / 4;
-    private static final int BOOTS_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Suits.Chance") / 4;
-    private static final int EMOTES_CHANCE = SettingsManager.getConfig().getInt("TreasureChests.Loots.Emotes.Chance");
 
     private static void setupChance(List<ResultType> resultRef, int percent, ResultType resultType) {
         for (int i = 0; i < percent; i++) {
@@ -93,9 +66,10 @@ public class TreasureRandomizer {
         }
     }
 
-    public TreasureRandomizer(final Player player, Location location) {
+    public TreasureRandomizer(final Player player, Location location, RewardType rewardType) {
         this.loc = location.add(0.5, 0, 0.5);
         this.player = player;
+        this.rewardType = rewardType;
         // add ammo.
         if (UltraCosmetics.getInstance().isAmmoEnabled() && ammoList.isEmpty())
             for (GadgetType type : GadgetType.values())
@@ -187,57 +161,9 @@ public class TreasureRandomizer {
         if (!Category.EMOTES.isEnabled())
             emoteList.clear();
 
-        if (Category.MORPHS.isEnabled()
-                && !morphList.isEmpty()
-                && UltraCosmetics.enabledCategories.contains(Category.MORPHS)
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Morphs.Enabled"))
-            setupChance(RESULT_TYPES, MORPHS_CHANCE, ResultType.MORPH);
-        if (Category.EFFECTS.isEnabled()
-                && !particleEffectList.isEmpty()
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Effects.Enabled"))
-            setupChance(RESULT_TYPES, EFFECTS_CHANCE, ResultType.EFFECT);
-        if (Category.GADGETS.isEnabled()) {
-            if (!ammoList.isEmpty()
-                    && UltraCosmetics.getInstance().isAmmoEnabled()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Gadgets-Ammo.Enabled"))
-                setupChance(RESULT_TYPES, AMMO_CHANCE, ResultType.AMMO);
-            if (!gadgetList.isEmpty()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Gadgets.Enabled"))
-                setupChance(RESULT_TYPES, GADGET_CHANCE, ResultType.GADGET);
+        for(RewardData rewardData : rewardType.getData()) {
+            setupChance(RESULT_TYPES, rewardData.getPercentage(), rewardData.getCategory());
         }
-        if (Category.PETS.isEnabled()
-                && !petList.isEmpty()
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Pets.Enabled"))
-            setupChance(RESULT_TYPES, PETS_CHANCE, ResultType.PET);
-        if (Category.MOUNTS.isEnabled()
-                && !mountList.isEmpty()
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Mounts.Enabled"))
-            setupChance(RESULT_TYPES, MOUNTS_CHANCE, ResultType.MOUNT);
-        if (Category.HATS.isEnabled()
-                && !hatList.isEmpty()
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Hats.Enabled"))
-            setupChance(RESULT_TYPES, HATS_CHANCE, ResultType.HAT);
-        if (SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Enabled")
-                && UltraCosmetics.moneyTreasureLoot)
-            setupChance(RESULT_TYPES, MONEY_CHANCE, ResultType.MONEY);
-        if (Category.SUITS.isEnabled()) {
-            if (!helmetList.isEmpty()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Suits.Enabled"))
-                setupChance(RESULT_TYPES, HELMET_CHANCE, ResultType.HELMET);
-            if (!chestplateList.isEmpty()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Suits.Enabled"))
-                setupChance(RESULT_TYPES, CHESTPLATE_CHANCE, ResultType.CHESTPLATE);
-            if (!leggingList.isEmpty()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Suits.Enabled"))
-                setupChance(RESULT_TYPES, LEGGINGS_CHANCE, ResultType.LEGGINGS);
-            if (!bootList.isEmpty()
-                    && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Suits.Enabled"))
-                setupChance(RESULT_TYPES, BOOTS_CHANCE, ResultType.BOOTS);
-        }
-        if (Category.EMOTES.isEnabled()
-                && !emoteList.isEmpty()
-                && (boolean) SettingsManager.getConfig().get("TreasureChests.Loots.Emotes.Enabled"))
-            setupChance(RESULT_TYPES, EMOTES_CHANCE, ResultType.EMOTE);
     }
 
     private String getMessage(String s) {
@@ -266,8 +192,11 @@ public class TreasureRandomizer {
             types = new ArrayList();
 
             switch (type) {
-                case MONEY:
-                    giveMoney();
+                case HUESITOS:
+                    giveHuesitos();
+                    break;
+                case ALMAS:
+                    giveAlmas();
                     break;
                 case AMMO:
                     if (!UltraCosmetics.getInstance().isAmmoEnabled()) {
@@ -367,7 +296,7 @@ public class TreasureRandomizer {
     public void giveNothing() {
         if(UltraCosmetics.getInstance().isVaultLoaded()) {
             try {
-                giveMoney();
+                giveHuesitos();
             } catch (Exception e) {
                 name = MessageManager.getMessage("Treasure-Chests-Loot.Nothing");
                 itemStack = new ItemStack(Material.BARRIER);
@@ -378,17 +307,7 @@ public class TreasureRandomizer {
         }
     }
     
-    private void giveMoney() {
-    	int i = random.nextInt(1);
-    	
-    	if(i == 1) {
-    		giveMoney1();
-    	} else {
-    		giveMoney2();
-    	}
-	}
-
-    public void giveMoney1() {
+    public void giveAlmas() {
         if (!UltraCosmetics.getInstance().isVaultLoaded()) {
             giveNothing();
             return;
@@ -403,7 +322,7 @@ public class TreasureRandomizer {
             Bukkit.broadcastMessage((getMessage("TreasureChests.Loots.Money.Message.message")).replace("%name%", player.getName()).replace("%money%", money + ""));
     }
     
-    public void giveMoney2() {
+    public void giveHuesitos() {
         if (!UltraCosmetics.getInstance().isVaultLoaded()) {
             giveNothing();
             return;
