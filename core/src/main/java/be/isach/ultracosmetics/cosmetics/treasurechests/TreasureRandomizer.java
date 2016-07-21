@@ -307,7 +307,7 @@ public class TreasureRandomizer {
         }
     }
     
-    public void giveAlmas() {
+    public void giveHuesitos() {
         if (!UltraCosmetics.getInstance().isVaultLoaded()) {
             giveNothing();
             return;
@@ -322,7 +322,7 @@ public class TreasureRandomizer {
             Bukkit.broadcastMessage((getMessage("TreasureChests.Loots.Money.Message.message")).replace("%name%", player.getName()).replace("%money%", money + ""));
     }
     
-    public void giveHuesitos() {
+    public void giveAlmas() {
         if (!UltraCosmetics.getInstance().isVaultLoaded()) {
             giveNothing();
             return;
