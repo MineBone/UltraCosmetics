@@ -43,24 +43,24 @@ public class TreasureRandomizer {
     private String name;
     private RewardType rewardType;
 
-    public static List<GadgetType> gadgetList = new ArrayList<>();
-    public static List<GadgetType> ammoList = new ArrayList<>();
-    public static List<ParticleEffectType> particleEffectList = new ArrayList<>();
-    public static List<MountType> mountList = new ArrayList<>();
-    public static List<PetType> petList = new ArrayList<>();
-    public static List<MorphType> morphList = new ArrayList<>();
-    public static List<Hat> hatList = new ArrayList<>();
-    public static List<SuitType> helmetList = new ArrayList<>();
-    public static List<SuitType> chestplateList = new ArrayList<>();
-    public static List<SuitType> leggingList = new ArrayList<>();
-    public static List<SuitType> bootList = new ArrayList<>();
-    public static List<EmoteType> emoteList = new ArrayList<>();
+    public List<GadgetType> gadgetList = new ArrayList<>();
+    public List<GadgetType> ammoList = new ArrayList<>();
+    public List<ParticleEffectType> particleEffectList = new ArrayList<>();
+    public List<MountType> mountList = new ArrayList<>();
+    public List<PetType> petList = new ArrayList<>();
+    public List<MorphType> morphList = new ArrayList<>();
+    public List<Hat> hatList = new ArrayList<>();
+    public List<SuitType> helmetList = new ArrayList<>();
+    public List<SuitType> chestplateList = new ArrayList<>();
+    public List<SuitType> leggingList = new ArrayList<>();
+    public List<SuitType> bootList = new ArrayList<>();
+    public List<EmoteType> emoteList = new ArrayList<>();
 
-    private static Random random = new Random();
+    private Random random = new Random();
 
-    private static final List<ResultType> RESULT_TYPES = new ArrayList<>();
+    private final List<ResultType> RESULT_TYPES = new ArrayList<>();
 
-    private static void setupChance(List<ResultType> resultRef, int percent, ResultType resultType) {
+    private void setupChance(List<ResultType> resultRef, int percent, ResultType resultType) {
         for (int i = 0; i < percent; i++) {
             resultRef.add(resultType);
         }
@@ -312,7 +312,7 @@ public class TreasureRandomizer {
             giveNothing();
             return;
         }
-        int money = MathUtils.randomRangeInt(20, (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max"));
+        int money = MathUtils.randomRangeInt(rewardType.getStartRange(ResultType.HUESITOS), rewardType.getEndRange(ResultType.HUESITOS));
         name = MessageManager.getMessage("Treasure-Chests-Loot.Money").replace("%money%", money + "");
         UltraCosmetics.economy.depositPlayer(EconomyType.HUESITOS, player, money);
         itemStack = new ItemStack(Material.BONE);
@@ -327,10 +327,10 @@ public class TreasureRandomizer {
             giveNothing();
             return;
         }
-        int money = MathUtils.randomRangeInt(20, (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max"));
-        name = MessageManager.getMessage("Treasure-Chests-Loot.Money").replace("%money%", money + "");
+        int money = MathUtils.randomRangeInt(rewardType.getStartRange(ResultType.ALMAS), rewardType.getEndRange(ResultType.ALMAS));
+        name = MessageManager.getMessage("Treasure-Chests-Loot.Money").replace("%money%", money + "").replace("Huesitos", "Almas");
         UltraCosmetics.economy.depositPlayer(EconomyType.ALMAS, player, money);
-        itemStack = new ItemStack(Material.DOUBLE_PLANT);
+        itemStack = new ItemStack(Material.NETHER_STAR);
         if (money > 3 * (int) SettingsManager.getConfig().get("TreasureChests.Loots.Money.Max") / 4)
             spawnRandomFirework(loc);
         if (SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Message.enabled"))
@@ -340,7 +340,7 @@ public class TreasureRandomizer {
     public void giveAmmo() {
         int i = random.nextInt(ammoList.size());
         GadgetType g = ammoList.get(i);
-        int ammo = MathUtils.randomRangeInt((int) SettingsManager.getConfig().get("TreasureChests.Loots.Gadgets-Ammo.Min"), (int) SettingsManager.getConfig().get("TreasureChests.Loots.Gadgets-Ammo.Max"));
+        int ammo = MathUtils.randomRangeInt(rewardType.getStartRange(ResultType.AMMO), rewardType.getEndRange(ResultType.AMMO));
         name = MessageManager.getMessage("Treasure-Chests-Loot.Ammo").replace("%name%", g.getName()).replace("%ammo%", ammo + "");
         ammoList.remove(i);
         UltraCosmetics.getCustomPlayer(player).addAmmo(g.toString().toLowerCase(), ammo);
