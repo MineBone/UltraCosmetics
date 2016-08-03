@@ -14,5 +14,6 @@ public enum ResultType {
     CHESTPLATE,
     LEGGINGS,
     BOOTS,
-    EMOTE
+    EMOTE,
+    ITEM
 }

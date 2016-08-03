@@ -27,10 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by sacha on 19/08/15.
@@ -55,6 +52,7 @@ public class TreasureRandomizer {
     public List<SuitType> leggingList = new ArrayList<>();
     public List<SuitType> bootList = new ArrayList<>();
     public List<EmoteType> emoteList = new ArrayList<>();
+    private List<ItemStack> items = new ArrayList<>();
 
     private Random random = new Random();
 
@@ -164,6 +162,14 @@ public class TreasureRandomizer {
         for(RewardData rewardData : rewardType.getData()) {
             setupChance(RESULT_TYPES, rewardData.getPercentage(), rewardData.getCategory());
         }
+
+        for(Map.Entry<ItemStack, Integer> entry : rewardType.getItems().entrySet()) {
+            for(int i = 0; i < entry.getValue(); i++) {
+                items.add(entry.getKey());
+            }
+        }
+
+        setupChance(RESULT_TYPES, items.size(), ResultType.ITEM);
     }
 
     private String getMessage(String s) {
@@ -237,6 +243,9 @@ public class TreasureRandomizer {
                     break;
                 case EMOTE:
                     giveRandomEmote();
+                    break;
+                case ITEM:
+                    giveItem();
                     break;
             }
 
@@ -320,6 +329,16 @@ public class TreasureRandomizer {
             spawnRandomFirework(loc);
         if (SettingsManager.getConfig().getBoolean("TreasureChests.Loots.Money.Message.enabled"))
             Bukkit.broadcastMessage((getMessage("TreasureChests.Loots.Money.Message.message")).replace("%name%", player.getName()).replace("%money%", money + ""));
+    }
+
+    public void giveItem() {
+        Collections.shuffle(items);
+        itemStack = items.get(0).clone();
+
+        name = MessageManager.getMessage("Treasure-Chests-Loot.Item").replace("%item%", itemStack.getType().name().toLowerCase() + "");
+
+        player.getInventory().addItem(items.get(0).clone());
+        spawnRandomFirework(loc);
     }
     
     public void giveAlmas() {

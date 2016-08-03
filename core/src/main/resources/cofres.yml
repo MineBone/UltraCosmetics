@@ -1,0 +1,107 @@
+# Para items
+# EJEMPLO:
+# COFRES:
+#   NORMAL:
+#     REWARDS:
+#       ITEM:
+#         PERCENTAGE: 50
+#         ITEMSTACK: WOOL:14,64 # Mateiral:Data,Amount
+COFRES:
+  NORMAL:
+    REWARDS:
+      AMMO:
+        PERCENTAGE: 50
+        MIN: 5
+        MAX: 10
+      HUESITOS:
+        PERCENTAGE: 45
+        MIN: 250
+        MAX: 500
+      ALMAS:
+        PERCENTAGE: 5
+        MIN: 250
+        MAX: 500
+  RARE:
+    REWARDS:
+      AMMO:
+        PERCENTAGE: 40
+        MIN: 5
+        MAX: 25
+      ALMAS:
+        PERCENTAGE: 15
+        MIN: 250
+        MAX: 750
+      HUESITOS:
+        PERCENTAGE: 30
+        MIN: 250
+        MAX: 750
+      GADGET:
+        PERCENTAGE: 10
+      HELMET:
+        PERCENTAGE: 1
+      CHESTPLATE:
+        PERCENTAGE: 1
+      LEGGINGS:
+        PERCENTAGE: 1
+      BOOTS:
+        PERCENTAGE: 2
+  EPIC:
+    REWARDS:
+      AMMO:
+        PERCENTAGE: 30
+        MIN: 5
+        MAX: 25
+      ALMAS:
+        PERCENTAGE: 20
+        MIN: 500
+        MAX: 1000
+      HUESITOS:
+        PERCENTAGE: 20
+        MIN: 500
+        MAX: 1000
+      GADGET:
+        PERCENTAGE: 15
+      HELMET:
+        PERCENTAGE: 2
+      CHESTPLATE:
+        PERCENTAGE: 2
+      LEGGINGS:
+        PERCENTAGE: 3
+      BOOTS:
+        PERCENTAGE: 3
+      HAT:
+        PERCENTAGE: 5
+  LEGENDARY:
+    REWARDS:
+      ALMAS:
+        PERCENTAGE: 20
+        MIN: 750
+        MAX: 1250
+      HUESITOS:
+        PERCENTAGE: 20
+        MIN: 750
+        MAX: 1250
+      GADGET:
+        PERCENTAGE: 15
+      HELMET:
+        PERCENTAGE: 2
+      CHESTPLATE:
+        PERCENTAGE: 2
+      LEGGINGS:
+        PERCENTAGE: 3
+      BOOTS:
+        PERCENTAGE: 3
+      HAT:
+        PERCENTAGE: 5
+      EMOTE:
+        PERCENTAGE: 5
+  VOTE:
+    REWARDS:
+      AMMO:
+        PERCENTAGE: 60
+        MIN: 1
+        MAX: 5
+      HUESITOS:
+        PERCENTAGE: 40
+        MIN: 50
+        MAX: 250

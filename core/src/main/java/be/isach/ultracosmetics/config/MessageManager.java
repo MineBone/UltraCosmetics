@@ -74,6 +74,7 @@ public class MessageManager {
         addMessage("Treasure-Chests-Loot.gadget", "%gadget% gadget");
         addMessage("Treasure-Chests-Loot.Suit", "%suit%");
         addMessage("Treasure-Chests-Loot.Emote", "%emote% emote");
+        addMessage("Treasure-Chests-Loot.Item", "%item% item");
         addMessage("Treasure-Chests-Loot.Nothing", "&c&lNothing");
 
         //Menus

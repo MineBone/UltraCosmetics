@@ -28,6 +28,7 @@ public class SettingsManager {
     // Config file.
     // Translation config file.
     private static SettingsManager messages = new SettingsManager("messages");
+    public static SettingsManager cofres = new SettingsManager("cofres");
 
     private static SettingsManager conf;
     public FileConfiguration fileConfiguration;
@@ -96,7 +97,6 @@ public class SettingsManager {
     /**
      * Creates a new file and defines fileConfiguration and file.
      *
-     * @param fileName
      */
     private SettingsManager() {
         file = new File(UltraCosmetics.getInstance().getDataFolder(), "config.yml");
@@ -134,7 +134,7 @@ public class SettingsManager {
     /**
      * Gets the data settings manager of a uuid.
      *
-     * @param p The player.
+     * @param uuid the UUID.
      * @return the data settings manager of a uuid.
      */
     public static SettingsManager getData(UUID uuid) {
